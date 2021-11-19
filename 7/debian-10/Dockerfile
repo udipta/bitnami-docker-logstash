@@ -38,7 +38,8 @@ RUN echo "Admin Password: $password"
 RUN useradd -M --system --shell /bin/bash --password $(echo $password | openssl passwd -1 -stdin) $username
 RUN usermod -aG root,sudo $username
 
-RUN mkdir /opt/bitnami/apilogs/ && chown $username:$username -R /opt/bitnami/apilogs/ && chmod -R 0700 /opt/bitnami/apilogs/
+RUN mkdir /opt/bitnami/apilogs/ /opt/bitnami/ssl/ && chown $username:$username -R /opt/bitnami/apilogs/ /opt/bitnami/ssl/ && chmod -R 0700 /opt/bitnami/apilogs/ /opt/bitnami/ssl/
+
 
 USER $username
 
