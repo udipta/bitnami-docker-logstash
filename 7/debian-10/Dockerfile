@@ -6,18 +6,20 @@ ENV HOME="/" \
     OS_FLAVOUR="debian-10" \
     OS_NAME="linux"
 
+ARG JAVA_EXTRA_SECURITY_DIR="/bitnami/java/extra-security"
+
 COPY prebuildfs /
 # Install required system packages and dependencies
-RUN install_packages acl ca-certificates curl gzip libc6 procps tar zlib1g sudo 
-RUN . /opt/bitnami/scripts/libcomponent.sh && component_unpack "java" "11.0.11-0" --checksum 8cf28afc1090b0fec1ad841012ead25b59d2d5f4212742c3d62e6007ef57850b
-RUN . /opt/bitnami/scripts/libcomponent.sh && component_unpack "logstash" "7.13.2-0" --checksum 7ccad1f3377dbc20dac43b893a2f04637d79c7180e7b576801805f5d01587eb8
-RUN . /opt/bitnami/scripts/libcomponent.sh && component_unpack "gosu" "1.13.0-0" --checksum fd7257c2736164d02832dbf72e2c1ed9d875bf3e32f0988520796bc503330129
+RUN . /opt/bitnami/scripts/libcomponent.sh && component_unpack "java" "11.0.13-0" --checksum 9552e53ccd3b0ec85a82c31c26a1462260e28b7c58770a5c53560afb02ec66d9
+RUN . /opt/bitnami/scripts/libcomponent.sh && component_unpack "logstash" "7.15.2-0" --checksum 22d4404d0079f5a4f7355b8b457e2d9c9b878f72640189a0ae9a085154d9e78c
+RUN . /opt/bitnami/scripts/libcomponent.sh && component_unpack "gosu" "1.14.0-0" --checksum 3e6fc37ca073b10a73a804d39c2f0c028947a1a596382a4f8ebe43dfbaa3a25e
 RUN chmod g+rwX /opt/bitnami
 
 COPY rootfs /
 RUN /opt/bitnami/scripts/logstash/postunpack.sh
+RUN /opt/bitnami/scripts/java/postunpack.sh
 ENV BITNAMI_APP_NAME="logstash" \
-    BITNAMI_IMAGE_VERSION="7.13.2-debian-10-r17" \
+    BITNAMI_IMAGE_VERSION="7.15.2-debian-10-r8" \
     JAVA_HOME="/opt/bitnami/java" \
     PATH="/opt/bitnami/java/bin:/opt/bitnami/logstash/bin:/opt/bitnami/common/bin:$PATH"
 
@@ -36,7 +38,8 @@ RUN echo "Admin Password: $password"
 RUN useradd -M --system --shell /bin/bash --password $(echo $password | openssl passwd -1 -stdin) $username
 RUN usermod -aG root,sudo $username
 
-RUN mkdir /opt/bitnami/apilogs/ && chown $username:$username -R /opt/bitnami/apilogs/ && chmod -R 0700 /opt/bitnami/apilogs/
+RUN mkdir /opt/bitnami/apilogs/ /opt/bitnami/ssl/ && chown $username:$username -R /opt/bitnami/apilogs/ /opt/bitnami/ssl/ && chmod -R 0700 /opt/bitnami/apilogs/ /opt/bitnami/ssl/
+
 
 USER $username
 
